@@ -7,4 +7,5 @@ TODO:
 - error handling
 - encrypted communications
 - authentication
-- allow multiple connections
+- allow multiple connections to different devices
+- allow commands to be sent to more than one device at a time
