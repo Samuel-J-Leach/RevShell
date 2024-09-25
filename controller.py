@@ -8,9 +8,7 @@ FORMAT = "utf-8"
 SOCKET = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 SOCKET.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 SOCKET.bind((SELF, PORT))
-
-HOST = input("host IP address: ")
-SOCKET.connect((HOST, PORT))
+SOCKET.listen()
 
 while True:
     command = input(">> ")
