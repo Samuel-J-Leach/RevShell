@@ -1,7 +1,9 @@
 This project is a reverse shell for remote server maintenance
 
+completed features:
+- remote command execution
+
 TODO:
--remote execution of commands
 - error handling
 - encrypted communications
 - authentication
