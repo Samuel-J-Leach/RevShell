@@ -9,8 +9,8 @@ FORMAT = "utf-8"
 SOCKET = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 SOCKET.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 SOCKET.bind((SELF, PORT))
-SOCKET.listen()
 
+SOCKET.listen()
 connection, address = SOCKET.accept()
 
 while True:

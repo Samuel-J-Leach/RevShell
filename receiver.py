@@ -11,6 +11,7 @@ SOCKET.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 SOCKET.bind((SELF, PORT))
 
 HOST = "ENTER CONTROLLER IP ADDRESS HERE"
+#using this computer's IP address temporarily for testing on the same computer
 SOCKET.connect((SELF, 5050))
 
 while True:
