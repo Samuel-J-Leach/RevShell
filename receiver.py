@@ -16,7 +16,7 @@ def main():
         SOCKET.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         SOCKET.bind((SELF, PORT))
         
-        #standby mode (trying to connect to the controller until successful )
+        #standby mode (trying to connect to the controller until successful)
         successful = False
         while not successful:
             try:
@@ -26,7 +26,7 @@ def main():
                 successful = True
             except:
                 print("no response")
-                sleep(5)
+                sleep(5)#may extend duration for final version
         
         #active mode (executing commands from the controller)
         while True:
@@ -43,6 +43,7 @@ def main():
             except Exception as e:
                 SOCKET.send(bytes(str(e), FORMAT))
 
+#prevents the program from crashing if the server disconnects unexpectedly
 while True:
     try:
         main()
