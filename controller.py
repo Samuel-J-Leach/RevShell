@@ -1,17 +1,6 @@
 import socket
 import threading
 from cryptography.hazmat.primitives.asymmetric import rsa
-'''
-def handleConnection(connection, address):
-    while True:
-        command = input(">> ")
-        if command == "exit":
-            connection.close()
-            break
-        connection.send(bytes(command, FORMAT))
-        output = connection.recv(BUFFER_SIZE)
-        print(output.decode(FORMAT))
-'''
 
 connections = {}
 
@@ -23,6 +12,7 @@ SOCKET = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 SOCKET.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 SOCKET.bind((SELF, PORT))
 
+#runs constantly in the background letting receivers connect
 def acceptConnections():
     SOCKET.listen()
     while True:
@@ -36,30 +26,37 @@ def acceptConnections():
 def sendCommand(addr, cmd):
     conn = connections[addr]
     conn.send(bytes(cmd, FORMAT))
-    print(conn.recv(BUFFER_SIZE).decode(FORMAT))
+    return conn.recv(BUFFER_SIZE).decode(FORMAT)
 
 def disconnectAll():
-    #terminate all connections
-    #receivers should go into standby mode
     for addr in connections:
         connections[addr].send(bytes("HOST_DISCONNECT", FORMAT))
         connections[addr].close()
+    return "all connections terminated"
 
-thread = threading.Thread(target=acceptConnections)
-thread.start()
 
-print("address:command")
+def main():
+    thread = threading.Thread(target=acceptConnections)
+    thread.start()
 
-while True:
-    command = input(">")
-    if command == "close":
-        disconnectAll()
-        break
-    elif command == "connections":
-        print(connections)
-    else:
-        command = command.split(":")
-        #commandThread = threading.Thread(target=sendCommand, args=(command[0],command[1]))
-        sendCommand(command[0], command[1])
+    print("address:command")
 
+    while True:
+        command = input(">")
+        if command == "close":
+            output = disconnectAll()
+            break
+        elif command == "connections":
+            output = connections
+        else:
+            command = command.split(":")
+            if len(command) == 2:
+                output = sendCommand(command[0], command[1])
+            elif len(command) > 2:
+                output = sendCommand(command[0], ":".join(command[1:]))
+            else:
+                output = "command not recognized"
+        print(output)
+
+main()
 SOCKET.close()

