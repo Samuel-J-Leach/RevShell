@@ -26,19 +26,24 @@ SOCKET.bind((SELF, PORT))
 def acceptConnections():
     SOCKET.listen()
     while True:
-        connection, address = SOCKET.accept()
-        connections[address[0]] = connection
+        try:
+            connection, address = SOCKET.accept()
+            connections[address[0]] = connection
+        except:
+            print("controller offline")
+            break
 
 def sendCommand(addr, cmd):
     conn = connections[addr]
     conn.send(bytes(cmd, FORMAT))
-    print(addr + ":\n" + conn.recv(BUFFER_SIZE).decode(FORMAT))
+    print(conn.recv(BUFFER_SIZE).decode(FORMAT))
 
 def disconnectAll():
     #terminate all connections
     #receivers should go into standby mode
     for addr in connections:
         connections[addr].send(bytes("HOST_DISCONNECT", FORMAT))
+        connections[addr].close()
 
 thread = threading.Thread(target=acceptConnections)
 thread.start()
@@ -47,11 +52,14 @@ print("address:command")
 
 while True:
     command = input(">")
-    if command == "exit":
+    if command == "close":
         disconnectAll()
         break
+    elif command == "connections":
+        print(connections)
     else:
         command = command.split(":")
         #commandThread = threading.Thread(target=sendCommand, args=(command[0],command[1]))
         sendCommand(command[0], command[1])
 
+SOCKET.close()
