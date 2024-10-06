@@ -27,12 +27,12 @@ def acceptConnections():
     SOCKET.listen()
     while True:
         connection, address = SOCKET.accept()
-        connections[address] = connection
+        connections[address[0]] = connection
 
 def sendCommand(addr, cmd):
     conn = connections[addr]
     conn.send(bytes(cmd, FORMAT))
-    print(conn.recv(BUFFER_SIZE).decode(FORMAT))
+    print(addr + ":\n" + conn.recv(BUFFER_SIZE).decode(FORMAT))
 
 def disconnectAll():
     #terminate all connections
@@ -47,5 +47,11 @@ print("address:command")
 
 while True:
     command = input(">")
-    commandThread = threading.Thread(target=sendCommand, args=(command))
+    if command == "exit":
+        disconnectAll()
+        break
+    else:
+        command = command.split(":")
+        #commandThread = threading.Thread(target=sendCommand, args=(command[0],command[1]))
+        sendCommand(command[0], command[1])
 

