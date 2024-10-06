@@ -24,9 +24,19 @@ def acceptConnections():
             break
 
 def sendCommand(addr, cmd):
+    if addr == "ALL":
+        return sendAll(cmd)
     conn = connections[addr]
     conn.send(bytes(cmd, FORMAT))
     return conn.recv(BUFFER_SIZE).decode(FORMAT)
+
+def sendAll(cmd):
+    responses = {}
+    for addr in connections:
+        conn = connections[addr]
+        conn.send(bytes(cmd, FORMAT))
+        responses[addr] = conn.recv(BUFFER_SIZE).decode(FORMAT)
+    return responses
 
 def disconnectAll():
     for addr in connections:
