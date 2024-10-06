@@ -43,4 +43,8 @@ def main():
             except Exception as e:
                 SOCKET.send(bytes(str(e), FORMAT))
 
-main()
+while True:
+    try:
+        main()
+    except:
+        print("server disconnected")
